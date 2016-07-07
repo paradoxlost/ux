@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ux.test", "ux.test\ux.test.csproj", "{AA415E64-2D58-47B5-9DC3-784456067240}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ux.winforms", "ux.winforms\ux.winforms.csproj", "{7C993EC5-4D7D-4432-9916-E225CEF4BAC8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AA415E64-2D58-47B5-9DC3-784456067240}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA415E64-2D58-47B5-9DC3-784456067240}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA415E64-2D58-47B5-9DC3-784456067240}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA415E64-2D58-47B5-9DC3-784456067240}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C993EC5-4D7D-4432-9916-E225CEF4BAC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C993EC5-4D7D-4432-9916-E225CEF4BAC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C993EC5-4D7D-4432-9916-E225CEF4BAC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C993EC5-4D7D-4432-9916-E225CEF4BAC8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
