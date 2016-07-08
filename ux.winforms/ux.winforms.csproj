@@ -49,7 +49,7 @@
     <Compile Include="Api\UnsafeNativeMethods.cs" />
     <Compile Include="Api\WindowMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThemeManager.cs" />
+    <Compile Include="Theme\ThemeManager.cs" />
     <Compile Include="Theme\ThemeParser.cs" />
     <Compile Include="Theme\ThemeStyle.cs" />
   </ItemGroup>

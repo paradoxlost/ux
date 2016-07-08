@@ -19,13 +19,16 @@ namespace Paradoxlost.UX.WinForms.Theme
 		}
 
 		public Type TargetClass { get; protected set; }
+		internal Dictionary<string, string> Variables { get; set; }
+		protected Dictionary<string, string> Properties { get; set; }
 
 		public ThemeStyle()
 		{
+			Properties = new Dictionary<string, string>();
 		}
 
 		public ThemeStyle(string className)
-			: base()
+			: this()
 		{
 			// how to handle namespace resolution??
 			// for now assume all types are in System.Windows.Forms
@@ -37,6 +40,11 @@ namespace Paradoxlost.UX.WinForms.Theme
 			}
 
 			TargetClass = targets[0];
+		}
+
+		public void AddProperty(string name, string value)
+		{
+			Properties.Add(name, value);
 		}
 	}
 }

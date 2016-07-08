@@ -1,23 +1,26 @@
 ﻿
 // Use class names to style ala HTML
 // Use Tag to specify "classes"
+// CSS style format
 // Attributes should be class properties
 // Attribute values should match one of the property type's contructors
-// Attributes should be on single line
+
+// NonClient sections are not nested to simplfy the parser
+// TODO: fix in future
 
 // Variables can be declared and used with $var syntax
 // Colors ... System.Drawing.Color
 
-var windowColor Green
+@var {
+	windowColor: Green;
+}
 
 
 Form {
-	Font: Segoe UI, 9.0, Regular
-	BackColor: $windowColor
+	Font: Segoe UI, 9.0, Regular;
+	BackColor: $windowColor;
 
 	// NonClient is special in that it doesn't represent an actual control
 	// There is some fudge here that will be spelled out explicitly
-	NonClient {
-		BackColor: $windowColor
-	}
+	NonClient.BackColor: $windowColor;
 }
