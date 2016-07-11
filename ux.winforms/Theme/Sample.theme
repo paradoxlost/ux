@@ -18,9 +18,9 @@
 
 Form {
 	Font: Segoe UI, 9.0, Regular;
-	BackColor: $windowColor;
+	BackColor: Green;
 
 	// NonClient is special in that it doesn't represent an actual control
 	// There is some fudge here that will be spelled out explicitly
-	NonClient.BackColor: $windowColor;
+	// NonClient.BackColor: $windowColor;
 }
