@@ -12,47 +12,10 @@ namespace Paradoxlost.UX.WinForms.Theme
 {
 	using StringDictionary = Dictionary<string, string>;
 	using ThemeList = List<ThemeStyle>;
+	using Util;
 
 	internal class ThemeParser
 	{
-		private static void Tokenize(string content, char d1, char d2,
-			Action<string, string> action)
-		{
-			Tokenize(content,
-				d1, d2,
-				d1p => d1p < 0,
-				d2p => d2p < 0,
-				action);
-		}
-
-		private static void Tokenize(string content, char d1, char d2,
-			Func<int, bool> startFail,
-			Func<int, bool> endFail,
-			Action<string, string> action)
-		{
-			if (string.IsNullOrWhiteSpace(content))
-				return;
-
-			int pos = 0;
-			while (pos < content.Length)
-			{
-				int d1pos = content.IndexOf(d1, pos);
-				if (startFail(d1pos))
-					break;
-				int d2pos = content.IndexOf(d2, d1pos);
-				if (endFail(d2pos))
-					break;
-
-				string t1 = content.Substring(pos, d1pos - pos).Trim();
-				d1pos++;
-				string t2 = content.Substring(d1pos, d2pos - d1pos).Trim();
-
-				action(t1, t2);
-
-				pos = d2pos + 1;
-			}
-		}
-
 		public static ThemeStyle[] ParseResource(string name)
 		{
 			return ParseResource(name, Assembly.GetCallingAssembly());
@@ -79,7 +42,7 @@ namespace Paradoxlost.UX.WinForms.Theme
 
 			if (!string.IsNullOrEmpty(content))
 			{
-				Tokenize(content, '{', '}',
+				content.Tokenize('{', '}',
 					(name, rules) =>
 					{
 						if (name[0] == '@')
@@ -124,7 +87,7 @@ namespace Paradoxlost.UX.WinForms.Theme
 
 			ThemeStyle style = new ThemeStyle(name);
 
-			Tokenize(content, ':', ';', (t1, t2) => style.AddProperty(t1, t2));
+			content.Tokenize(':', ';', (t1, t2) => style.AddProperty(t1, t2));
 
 			return style;
 		}

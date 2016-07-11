@@ -16,6 +16,10 @@ namespace Paradoxlost.UX.WinForms.Theme
 			foreach (ThemeStyle style in styles)
 			{
 				System.Diagnostics.Debug.Print(style.TargetClass.Name);
+				if (style.TargetClass.IsAssignableFrom(window.GetType()))
+				{
+					style.Apply(window);
+				}
 			}
 		}
 	}
