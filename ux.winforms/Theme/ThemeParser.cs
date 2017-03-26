@@ -51,7 +51,7 @@ namespace Paradoxlost.UX.WinForms.Theme
 						}
 						else
 						{
-							ThemeStyle style = ProcessStyle(name, rules);
+							ThemeStyle style = ProcessStyle(name, rules, variables);
 							if (style != null)
 							{
 								style.Variables = variables;
@@ -74,13 +74,23 @@ namespace Paradoxlost.UX.WinForms.Theme
 		private static void ProcessInstruction(string name, string content,
 			ThemeList styles, StringDictionary variables)
 		{
+            switch (name)
+            {
+                case "@var":
+                    ParseVariables(variables, content);
+                    break;
+            }
 		}
 
 		private static void ParseVariables(StringDictionary variables, string content)
 		{
+            if (string.IsNullOrWhiteSpace(content))
+                return;
+
+            content.Tokenize(':', ';', (t1, t2) => variables.Add(t1, t2));
 		}
 
-		private static ThemeStyle ProcessStyle(string name, string content)
+		private static ThemeStyle ProcessStyle(string name, string content, StringDictionary variables)
 		{
 			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(content))
 				return null;

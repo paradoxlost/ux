@@ -19,7 +19,8 @@ namespace Paradoxlost.UX.WinForms.Theme
 		protected static Module FormsModule { get; private set; }
 		static ThemeStyle()
 		{
-			Type controlType = typeof(Control);
+            // for now assume all types are in System.Windows.Forms
+            Type controlType = typeof(Control);
 			FormsAssembly = controlType.Assembly;
 			FormsModule = controlType.Module;
 		}
@@ -38,7 +39,16 @@ namespace Paradoxlost.UX.WinForms.Theme
 		{
 			// how to handle namespace resolution??
 			// for now assume all types are in System.Windows.Forms
-			Type[] targets = FormsModule.FindTypes((t, c) => t.Name == (string)c, className);
+			Type[] targets = FormsModule.FindTypes(
+                (t, c) =>
+                {
+                    bool result = false;
+                    if (t.IsClass)
+                    {
+                        result = ((t.IsNested) ? t.FullName.Substring(t.Namespace.Length + 1) : t.Name) == (string)c;
+                    }
+                    return result;
+                }, className);
 
 			if (targets.Length != 1)
 			{
@@ -61,8 +71,13 @@ namespace Paradoxlost.UX.WinForms.Theme
 				if (pi == null)
 					continue;
 
-				Type propertyType = pi.PropertyType;
-				string[] args = pair.Value.Split(new string[] { ", " }, StringSplitOptions.None);
+                // check for variables
+                string pairValue = pair.Value;
+                if (pairValue[0] == '$')
+                    pairValue = Variables[pairValue.Substring(1)];
+
+                Type propertyType = pi.PropertyType;
+				string[] args = pairValue.Split(new string[] { ", " }, StringSplitOptions.None);
 
 				// color is stupid
 				// it doesn't use ctors. it has a bunch of static methods
@@ -76,9 +91,12 @@ namespace Paradoxlost.UX.WinForms.Theme
 					}
 					else
 					{
-						value = Color.FromName(args[0]);
+                        value = Color.FromKnownColor(
+                            (KnownColor)Enum.Parse(typeof(KnownColor), args[0], true));
 					}
 					pi.SetValue(control, value);
+
+                    continue;
 				}
 
 				// find a property ctor with the same number of args

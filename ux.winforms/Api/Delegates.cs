@@ -8,4 +8,5 @@ using System.Windows.Forms;
 namespace Paradoxlost.UX.WinForms.Api
 {
 	public delegate bool MessageAction(NativeWindow hwnd, ref Message m);
+    public delegate IntPtr HookProc(int code, IntPtr wParam, IntPtr lParam);
 }

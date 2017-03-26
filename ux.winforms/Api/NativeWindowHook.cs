@@ -9,7 +9,7 @@ namespace Paradoxlost.UX.WinForms.Api
 {
 	using ActionDictionary = MultiValueDictionary<WindowMessage, MessageAction>;
 
-	internal class NativeWindowHook : NativeWindow
+	public class NativeWindowHook : NativeWindow
 	{
 		protected Control Hooked { get; private set; }
 		protected ActionDictionary MessageActions { get; private set; }
@@ -67,6 +67,7 @@ namespace Paradoxlost.UX.WinForms.Api
 					this.MessageActions.Clear();
 					this.ReleaseHandle();
 					Hooked = null;
+					base.WndProc(ref m);
 					break;
 
 				default:

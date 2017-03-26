@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Paradoxlost.UX.WinForms.Theme;
+using Paradoxlost.UX.WinForms.Api;
 
 namespace Paradoxlost.UX.test
 {
@@ -21,7 +22,11 @@ namespace Paradoxlost.UX.test
 
 		private void Form1_Load(object sender, EventArgs e)
 		{
-			ThemeManager.ApplyTheme(this);
+            //this.Show();
+            //ThemeManager.ApplyTheme(this);
+
+            for (int i = 0; i < 1; i++)
+                (new Form2()).Show();
 		}
 	}
 }

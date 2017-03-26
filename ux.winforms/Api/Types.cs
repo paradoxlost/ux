@@ -239,4 +239,14 @@ namespace Paradoxlost.UX.WinForms.Api
 				this.MinPosition.GetHashCode() + this.NormalPosition.GetHashCode() + this.ShowCmd.GetHashCode();
 		}
 	}
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct CWPRETSTRUCT
+    {
+        public IntPtr lResult;
+        public IntPtr lParam;
+        public IntPtr wParam;
+        public uint message;
+        public IntPtr hWnd;
+    }
 }

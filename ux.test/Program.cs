@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using Paradoxlost.UX.WinForms.Theme;
+
 namespace Paradoxlost.UX.test
 {
 	static class Program
@@ -14,9 +16,13 @@ namespace Paradoxlost.UX.test
 		[STAThread]
 		static void Main()
 		{
-			Application.EnableVisualStyles();
+            ThemeManager.ApplyGlobalTheme("default.theme");
+
+            Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			Application.Run(new Form1());
+
+            ThemeManager.DisableGlobalTheme();
 		}
 	}
 }
