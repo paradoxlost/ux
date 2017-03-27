@@ -9,7 +9,7 @@
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Basic theme engine for .NET WinForms</description>
-    <releaseNotes>Initial Release</releaseNotes>
+    <releaseNotes>Remove experimental reference, downgrade to .NET 4.0</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>Windows Forms Theme WinForms Style</tags>
   </metadata>

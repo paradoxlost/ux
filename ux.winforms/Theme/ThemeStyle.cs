@@ -77,7 +77,8 @@ namespace Paradoxlost.UX.WinForms.Theme
                         value = Color.FromKnownColor(
                             (KnownColor)Enum.Parse(typeof(KnownColor), args[0], true));
                     }
-                    pi.SetValue(control, value);
+                    pi.SetValue(control, value, null);
+                    //pi.SetValue(control, value);
 
                     continue;
                 }
@@ -120,7 +121,7 @@ namespace Paradoxlost.UX.WinForms.Theme
                     if (good)
                     {
                         object value = ci.Invoke(values);
-                        pi.SetValue(control, value);
+                        pi.SetValue(control, value, null);
                         break;
                     }
                 }

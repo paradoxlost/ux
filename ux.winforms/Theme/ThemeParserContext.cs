@@ -27,7 +27,7 @@ namespace Paradoxlost.UX.WinForms.Theme
             // how to handle namespace resolution??
             // for now assume all types are in System.Windows.Forms
             List<Type> targets = new List<Type>();
-            foreach (Module mod in Assembly.Modules)
+            foreach (Module mod in this.Assembly.GetModules(false))
             {
                 Type[] modTargets = mod.FindTypes(
                     (t, c) =>

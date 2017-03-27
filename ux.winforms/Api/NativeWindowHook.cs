@@ -7,7 +7,8 @@ using System.Windows.Forms;
 
 namespace Paradoxlost.UX.WinForms.Api
 {
-	using ActionDictionary = MultiValueDictionary<WindowMessage, MessageAction>;
+    using ActionList = List<MessageAction>;
+    using ActionDictionary = Dictionary<WindowMessage, List<MessageAction>>;
 
 	public class NativeWindowHook : NativeWindow
 	{
@@ -31,7 +32,13 @@ namespace Paradoxlost.UX.WinForms.Api
 
 		public void HandleMessage(WindowMessage msg, MessageAction action)
 		{
-			this.MessageActions.Add(msg, action);
+            ActionList actions;
+            if (!this.MessageActions.TryGetValue(msg, out actions))
+            {
+                actions = new ActionList();
+                this.MessageActions.Add(msg, actions);
+            }
+			actions.Add(action);
 		}
 
 		private void OnHookedHandleCreated(object sender, EventArgs e)
@@ -45,7 +52,7 @@ namespace Paradoxlost.UX.WinForms.Api
 			WindowMessage msg = (WindowMessage)m.Msg;
 
 			bool messageHandled = false;
-			IReadOnlyCollection<MessageAction> actions;
+			ActionList actions;
 			if (this.MessageActions.TryGetValue(msg, out actions))
 			{
 				foreach (MessageAction handler in actions)
