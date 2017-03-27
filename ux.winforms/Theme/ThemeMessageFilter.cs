@@ -103,7 +103,7 @@ namespace Paradoxlost.UX.WinForms.Theme
                 foreach (ThemeStyle style in Styles)
                 {
                     //System.Diagnostics.Debug.Print(style.TargetClass.Name);
-                    if (style.TargetClass.IsAssignableFrom(control.GetType()))
+                    if (style.Target.IsAssignableFrom(control.GetType()))
                     {
                         style.Apply(control);
                     }

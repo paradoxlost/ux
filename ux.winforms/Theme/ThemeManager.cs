@@ -54,7 +54,7 @@ namespace Paradoxlost.UX.WinForms.Theme
                 foreach (ThemeStyle style in styles)
                 {
                     //System.Diagnostics.Debug.Print(style.TargetClass.Name);
-                    if (style.TargetClass.IsAssignableFrom(window.GetType()))
+                    if (style.Target.IsAssignableFrom(window.GetType()))
                     {
                         style.Apply(window);
                     }
@@ -68,8 +68,8 @@ namespace Paradoxlost.UX.WinForms.Theme
 
             foreach (ThemeStyle style in styles)
             {
-                System.Diagnostics.Debug.Print(style.TargetClass.Name);
-                if (style.TargetClass.IsAssignableFrom(window.GetType()))
+                System.Diagnostics.Debug.Print(style.Target.Name);
+                if (style.Target.IsAssignableFrom(window.GetType()))
                 {
                     style.Apply(window);
                 }

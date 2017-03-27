@@ -8,6 +8,11 @@ namespace Paradoxlost.UX.WinForms.Util
 {
 	public static class StringTokenizeExtension
 	{
+        public static void ParseKeyValuePair(this string content, Action<string, string> action)
+        {
+            Tokenize(content, ':', ';', action);
+        }
+
 		public static void Tokenize(this string content, char d1, char d2,
 			Action<string, string> action)
 		{
