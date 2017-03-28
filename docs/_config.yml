@@ -1,3 +1,5 @@
 theme: jekyll-theme-midnight
 title: WinForms Theme Engine
 description: Simple theme engine for windows forms applications
+
+show_downloads: true
