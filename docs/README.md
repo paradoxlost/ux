@@ -11,16 +11,22 @@ Install-Package Paradoxlost.UX.WinForms
 Example:
 
 ```css
-@var {
+@vals {
     myFont: Segoe UI, 9.0, Regular;
 }
 
-@module {
-    Assembly: System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL;
+@modules {
+	// Default is always System.Windows.Forms
+	MyModule: some.assembly;
 }
 
 Form {
     Font: $myFont;
     BackColor: Blue;
+}
+
+MyCustomForm {
+	$module: MyModule;
+	BackColor: Green;
 }
 ```

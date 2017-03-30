@@ -11,35 +11,37 @@
 // Variables can be declared and used with $var syntax
 // Colors => System.Drawing.KnownColor or HTML Code
 
-@var {
+@vals {
 	windowColor: Green;
 }
 
-@module {
-	Assembly: System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL;
-	Namespace: System.Windows.Forms;
+@modules {
+	// Default is always System.Windows.Forms
+	UxTest: paradoxlost.ux.test;
 }
 
 Form {
-	AutoScaleMode = Dpi;
+	$module: Default;
+	AutoScaleMode: Dpi;
 	Font: Segoe UI, 9.0, Regular;
 	BackColor: $windowColor;
 
 	// NonClient is special in that it doesn't represent an actual control
 	// There is some fudge here that will be spelled out explicitly
 	// NonClient.BackColor: $windowColor;
-}
 
-Button {
-	BackColor: ControlDarkDark;
-}
-
-// changes the target module for everything until another module declaration
-@module {
-	Assembly: paradoxlost.ux.test;
+	Button {
+		BackColor: ControlDarkDark;
+	}
 }
 
 Form2 {
+	$module: UxTest;
 	BackColor: Blue;
+
+	Button {
+		$module: Default;
+		BackColor: White;
+	}
 }
 

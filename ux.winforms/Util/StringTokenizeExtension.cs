@@ -37,8 +37,26 @@ namespace Paradoxlost.UX.WinForms.Util
 				int d1pos = content.IndexOf(d1, pos);
 				if (startFail(d1pos))
 					break;
-				int d2pos = content.IndexOf(d2, d1pos);
-				if (endFail(d2pos))
+				int d2pos = d1pos + 1;
+                int depth = 1;
+                bool failed = false;
+                while (!failed && depth > 0)
+                {
+                    d2pos = content.IndexOfAny(new char[] { d1, d2 }, d2pos + 1);
+                    failed = endFail(d2pos);
+                    if (!failed)
+                    {
+                        if (content[d2pos] == d1)
+                        {
+                            depth++;
+                        }
+                        else if (content[d2pos] == d2)
+                        {
+                            depth--;
+                        }
+                    }
+                }
+				if (failed)
 					break;
 
 				string t1 = content.Substring(pos, d1pos - pos).Trim();

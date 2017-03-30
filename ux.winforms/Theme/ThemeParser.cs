@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Paradoxlost.UX.WinForms.Theme
 {
+    using ContextDictionary = Dictionary<string, ThemeParserContext>;
 	using StringDictionary = Dictionary<string, string>;
 	using ThemeList = List<ThemeStyle>;
 	using Util;
@@ -32,8 +33,8 @@ namespace Paradoxlost.UX.WinForms.Theme
 		public static ThemeStyle[] Parse(Stream stream)
 		{
 			ThemeList styles = new ThemeList();
-			StringDictionary variables = new StringDictionary();
-            ThemeParserContext context = ThemeParserContext.Default;
+            ContextDictionary context = new ContextDictionary();
+            context.Add("Default", ThemeParserContext.Default);
 
 			string content = null;
 			using (StreamReader reader = new StreamReader(stream))
@@ -43,23 +44,7 @@ namespace Paradoxlost.UX.WinForms.Theme
 
 			if (!string.IsNullOrEmpty(content))
 			{
-				content.Tokenize('{', '}',
-					(name, rules) =>
-					{
-						if (name[0] == '@')
-						{
-							ProcessInstruction(name, rules, styles, variables, ref context);
-						}
-						else
-						{
-							ThemeStyle style = ProcessStyle(name, rules, variables, context);
-							if (style != null)
-							{
-								style.Variables = variables;
-								styles.Add(style);
-							}
-						}
-					});
+                ProcessRuleset(content, context, styles, null);
 			}
 
 			return styles.ToArray();
@@ -72,40 +57,85 @@ namespace Paradoxlost.UX.WinForms.Theme
 			return replace.Replace(content, string.Empty);
 		}
 
+        private static void ProcessRuleset(string content, ContextDictionary context, ThemeList styles, ThemeStyle parent)
+        {
+            StringDictionary variables = new StringDictionary();
+
+            content.Tokenize('{', '}',
+                (name, rules) =>
+                {
+                    if (name[0] == '@')
+                    {
+                        ProcessInstruction(name, rules, styles, variables, context);
+                    }
+                    else
+                    {
+                        // nested rules?
+                        int brace = rules.IndexOf('{');
+                        int lastSemiColon = rules.Length;
+                        if (brace >= 0)
+                        {
+                            lastSemiColon = rules.LastIndexOf(';', brace, brace - 1);
+                            if (lastSemiColon >= 0)
+                            {
+                                lastSemiColon++;
+                            }
+                        }
+
+                        ThemeStyle style = ProcessStyle(name, rules.Substring(0, lastSemiColon), variables, context);
+                        if (style != null)
+                        {
+                            style.Parent = parent != null ? parent.Target : null;
+                            style.Variables = variables;
+                            styles.Add(style);
+                        }
+                        if (brace >= 0)
+                        {
+                            ProcessRuleset(rules.Substring(lastSemiColon, rules.Length - lastSemiColon), context, styles, style);
+                        }
+                    }
+                });
+        }
+
 		private static void ProcessInstruction(string name, string content,
-			ThemeList styles, StringDictionary variables, ref ThemeParserContext context)
+            ThemeList styles, StringDictionary variables, ContextDictionary context)
 		{
             switch (name)
             {
-                case "@var":
+                case "@vals":
                     ParseVariables(variables, content);
                     break;
 
                 case "@include":
                     break;
 
-                case "@module":
-                    ThemeParserContext tmp = ParseContext(content);
-                    if (tmp != null && tmp != context)
-                        context = tmp;
+                case "@modules":
+                    ParseContext(content, context);
                     break;
             }
 		}
 
-        private static ThemeParserContext ParseContext(string content)
+        private static ThemeParserContext ParseContext(string content, ContextDictionary context)
         {
             if (string.IsNullOrWhiteSpace(content))
-                throw new InvalidOperationException("@module section cannot be empty");
+                throw new InvalidOperationException("@modules section cannot be empty");
 
             ThemeParserContext result = null;
 
             content.ParseKeyValuePair(
                 (key, value) =>
                 {
-                    if (string.Compare(key, "Assembly", true) == 0)
+                    try
                     {
-                        result = new ThemeParserContext(Assembly.Load(value));
+                        context.Add(key, new ThemeParserContext(Assembly.Load(value)));
                     }
+                    catch
+                    {
+                    }
+                    //if (string.Compare(key, "Assembly", true) == 0)
+                    //{
+                    //    result = new ThemeParserContext(Assembly.Load(value));
+                    //}
                 });
             return result;
         }
@@ -117,14 +147,25 @@ namespace Paradoxlost.UX.WinForms.Theme
             content.ParseKeyValuePair((t1, t2) => variables.Add(t1, t2));
 		}
 
-		private static ThemeStyle ProcessStyle(string name, string content, StringDictionary variables, ThemeParserContext context)
+        private static ThemeStyle ProcessStyle(string name, string content, StringDictionary variables, ContextDictionary context)
 		{
 			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(content))
 				return null;
 
-			ThemeStyle style = new ThemeStyle(context, name);
+            StringDictionary values = new StringDictionary();
+            content.ParseKeyValuePair((t1, t2) => values.Add(t1, t2));
 
-            content.ParseKeyValuePair((t1, t2) => style.AddProperty(t1, t2));
+            string module = null;
+            ThemeParserContext styleContext = ThemeParserContext.Default;
+
+            if (values.TryGetValue("$module", out module))
+            {
+                context.TryGetValue(module, out styleContext);
+                values.Remove("$module");
+            }
+
+            ThemeStyle style = new ThemeStyle(styleContext, name);
+            style.UpdateProperties(values);
 
 			return style;
 		}

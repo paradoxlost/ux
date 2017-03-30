@@ -24,8 +24,9 @@ namespace Paradoxlost.UX.WinForms.Theme
         //    FormsAssembly = controlType.Assembly;
         //    FormsModule = controlType.Module;
         //}
-        public ThemeParserContext Context { get; protected set; }
+        public ThemeParserContext Context { get; internal set; }
         public Type Target { get; protected set; }
+        public Type Parent { get; set; }
         internal StringDictionary Variables { get; set; }
         protected StringDictionary Properties { get; set; }
 
@@ -41,9 +42,42 @@ namespace Paradoxlost.UX.WinForms.Theme
             Target = Context.GetTarget(className);
         }
 
+        internal void UpdateProperties(StringDictionary properties)
+        {
+            Properties = properties;
+        }
+
         public void AddProperty(string name, string value)
         {
             Properties.Add(name, value);
+        }
+
+        public bool CanApplyTo(Control control)
+        {
+            bool result = false;
+
+            if (Target.IsAssignableFrom(control.GetType()))
+            {
+                if (Parent != null)
+                {
+                    Control current = control;
+                    while (current != null)
+                    {
+                        current = current.Parent;
+                        if (current != null && Parent.IsAssignableFrom(current.GetType()))
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    result = true;
+                }
+            }
+
+            return result;
         }
 
         public void Apply(Control control)
