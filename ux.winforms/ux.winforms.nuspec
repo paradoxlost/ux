@@ -6,6 +6,7 @@
     <title>Paradoxlost WinForms Theme Engine</title>
     <authors>BJ Herrington</authors>
     <owners>paradoxlost</owners>
+    <projectUrl>https://paradoxlost.github.io/ux</projectUrl>
     <licenseUrl>https://opensource.org/licenses/MIT</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Basic theme engine for .NET WinForms</description>
