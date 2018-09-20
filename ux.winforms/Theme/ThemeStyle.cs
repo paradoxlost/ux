@@ -84,7 +84,20 @@ namespace Paradoxlost.UX.WinForms.Theme
         {
             foreach (StringKeyValue pair in Properties)
             {
-                PropertyInfo pi = Target.GetProperty(pair.Key, BindingFlags.Instance | BindingFlags.Public);
+                var props = pair.Key.Split('.');
+                PropertyInfo pi = null;
+                var currentTarget = this.Target;
+                object currentInstance = control;
+                object previousInstance = control;
+                foreach (var p in props)
+                {
+                    previousInstance = currentInstance;
+                    pi = currentTarget.GetProperty(p, BindingFlags.Instance | BindingFlags.Public);
+                    if (pi == null) break;
+                    currentInstance = pi.GetValue(previousInstance, null);
+                    currentTarget = pi.PropertyType;
+                }
+                currentInstance = previousInstance;
                 if (pi == null)
                     continue;
 
@@ -96,24 +109,27 @@ namespace Paradoxlost.UX.WinForms.Theme
                 Type propertyType = pi.PropertyType;
                 string[] args = pairValue.Split(new string[] { ", " }, StringSplitOptions.None);
 
-
                 if (propertyType == typeof(Color))
                 {
-                    SetColor(control, pi, args);
+                    SetColor(currentInstance, pi, args);
                 }
                 else if (propertyType.IsPrimitive)
                 {
                     var value = Convert.ChangeType(args[0], propertyType);
-                    pi.SetValue(control, value, null);
+                    pi.SetValue(currentInstance, value, null);
+                }
+                else if (propertyType.IsEnum)
+                {
+                    pi.SetValue(currentInstance, Enum.Parse(propertyType, args[0], true), null);
                 }
                 else
                 {
-                    SetViaCtor(control, pi, propertyType, args);
+                    SetViaCtor(currentInstance, pi, propertyType, args);
                 }
             }
         }
 
-        private static void SetViaCtor(Control control, PropertyInfo pi, Type propertyType, string[] args)
+        private static void SetViaCtor(object control, PropertyInfo pi, Type propertyType, string[] args)
         {
             // find a property ctor with the same number of args
             foreach (ConstructorInfo ci in propertyType.GetConstructors())
@@ -159,7 +175,7 @@ namespace Paradoxlost.UX.WinForms.Theme
             }
         }
 
-        private static void SetColor(Control control, PropertyInfo pi, string[] args)
+        private static void SetColor(object control, PropertyInfo pi, string[] args)
         {
             // color is stupid
             // it doesn't use ctors. it has a bunch of static methods
