@@ -58,6 +58,7 @@
     <Compile Include="Api\UnsafeNativeMethods.cs" />
     <Compile Include="Api\WindowMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Theme\StyledReflectedProperty.cs" />
     <Compile Include="Theme\ThemeManager.cs" />
     <Compile Include="Theme\ThemeMessageFilter.cs" />
     <Compile Include="Theme\ThemeParser.cs" />

@@ -42,7 +42,7 @@ Form2 {
 	Button {
 		$module: Default;
 		BackColor: White;
-		//Enabled: false;
+		Enabled: false;
 		ForeColor: Blue;
 		FlatStyle: Flat;
 		FlatAppearance.BorderSize: 4;
