@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
+using System.Windows.Forms;
 
 namespace Paradoxlost.UX.WinForms.Theme
 {
@@ -8,11 +10,13 @@ namespace Paradoxlost.UX.WinForms.Theme
     {
         private readonly object instance;
         private readonly PropertyInfo propertyInfo;
+        private readonly ISynchronizeInvoke synchronizeInvoke;
 
-        public StyledReflectedProperty(object currentInstance, PropertyInfo propertyInfo)
+        public StyledReflectedProperty(object currentInstance, PropertyInfo propertyInfo, ISynchronizeInvoke synchronizeInvoke)
         {
             this.instance = currentInstance;
             this.propertyInfo = propertyInfo;
+            this.synchronizeInvoke = synchronizeInvoke;
         }
 
         public void SetValue(params string[] args)
@@ -20,24 +24,25 @@ namespace Paradoxlost.UX.WinForms.Theme
             Type propertyType = this.propertyInfo.PropertyType;
             if (propertyType == typeof(Color))
             {
-                SetColor(this.instance, args[0]);
+                SetColor(args[0]);
             }
             else if (propertyType.IsPrimitive)
             {
-                var value = Convert.ChangeType(args[0], propertyType);
-                this.propertyInfo.SetValue(this.instance, value, null);
+                var primitive = Convert.ChangeType(args[0], propertyType);
+                this.SetValueCore(primitive);
             }
             else if (propertyType.IsEnum)
             {
-                this.propertyInfo.SetValue(this.instance, Enum.Parse(propertyType, args[0], true), null);
+                var enumValue = Enum.Parse(propertyType, args[0], true);
+                this.SetValueCore(enumValue);
             }
             else
             {
-                SetViaCtor(this.instance, args);
+                SetViaCtor(args);
             }
         }
 
-        private void SetViaCtor(object control, string[] args)
+        private void SetViaCtor(string[] args)
         {
             // find a property ctor with the same number of args
             foreach (ConstructorInfo ci in this.propertyInfo.PropertyType.GetConstructors())
@@ -77,13 +82,13 @@ namespace Paradoxlost.UX.WinForms.Theme
                 if (good)
                 {
                     object value = ci.Invoke(values);
-                    this.propertyInfo.SetValue(control, value, null);
+                    this.SetValueCore(value);
                     break;
                 }
             }
         }
 
-        private void SetColor(object control, string color)
+        private void SetColor(string color)
         {
             // color is stupid
             // it doesn't use ctors. it has a bunch of static methods
@@ -98,8 +103,28 @@ namespace Paradoxlost.UX.WinForms.Theme
                 value = Color.FromKnownColor(
                     (KnownColor)Enum.Parse(typeof(KnownColor), color, true));
             }
-            this.propertyInfo.SetValue(control, value, null);
+
+            this.SetValueCore(value);
             //pi.SetValue(control, value);
+        }
+
+        private void SetValueCore(object value)
+        {
+            InvokeIfRequired(()=>this.propertyInfo.SetValue(this.instance, value, null));
+        }
+
+        public void InvokeIfRequired(MethodInvoker action)
+        {
+            // See Update 2 for edits Mike de Klerk suggests to insert here.
+
+            if (this.synchronizeInvoke.InvokeRequired)
+            {
+                this.synchronizeInvoke.Invoke(action,null);
+            }
+            else
+            {
+                action();
+            }
         }
     }
 }

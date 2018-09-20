@@ -110,7 +110,7 @@ namespace Paradoxlost.UX.WinForms.Theme
             currentInstance = previousInstance;
             if (pi == null) return null;
 
-            return new StyledReflectedProperty(currentInstance, pi);
+            return new StyledReflectedProperty(currentInstance, pi, control);
         }
     }
 }
