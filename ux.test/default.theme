@@ -42,6 +42,7 @@ Form2 {
 	Button {
 		$module: Default;
 		BackColor: White;
+		Enabled: false;
 	}
 }
 
