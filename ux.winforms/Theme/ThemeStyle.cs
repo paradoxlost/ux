@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Paradoxlost.UX.WinForms.Theme
@@ -82,84 +78,39 @@ namespace Paradoxlost.UX.WinForms.Theme
 
         public void Apply(Control control)
         {
-            foreach (StringKeyValue pair in Properties)
+            foreach (StringKeyValue pair in this.Properties)
             {
-                PropertyInfo pi = Target.GetProperty(pair.Key, BindingFlags.Instance | BindingFlags.Public);
-                if (pi == null)
-                    continue;
+                StyledReflectedProperty property = this.CreateStyledReflectedProperty(control, pair.Key);
 
                 // check for variables
                 string pairValue = pair.Value;
                 if (pairValue[0] == '$')
-                    pairValue = Variables[pairValue.Substring(1)];
+                    pairValue = this.Variables[pairValue.Substring(1)];
 
-                Type propertyType = pi.PropertyType;
                 string[] args = pairValue.Split(new string[] { ", " }, StringSplitOptions.None);
-
-                // color is stupid
-                // it doesn't use ctors. it has a bunch of static methods
-                if (propertyType == typeof(Color))
-                {
-                    object value;
-                    // we'll only handle names & html
-                    if (args[0][0] == '#')
-                    {
-                        value = ColorTranslator.FromHtml(args[0]);
-                    }
-                    else
-                    {
-                        value = Color.FromKnownColor(
-                            (KnownColor)Enum.Parse(typeof(KnownColor), args[0], true));
-                    }
-                    pi.SetValue(control, value, null);
-                    //pi.SetValue(control, value);
-
-                    continue;
-                }
-
-                // find a property ctor with the same number of args
-                foreach (ConstructorInfo ci in propertyType.GetConstructors())
-                {
-                    ParameterInfo[] ctorArgs = ci.GetParameters();
-                    if (ctorArgs.Length != args.Length)
-                        continue;
-
-                    // see if we can use this one
-                    object[] values = new object[args.Length];
-                    bool good = true;
-                    for (int i = 0; i < ctorArgs.Length; i++)
-                    {
-                        try
-                        {
-                            Type argType = ctorArgs[i].ParameterType;
-                            if (argType.IsEnum)
-                            {
-                                values[i] = Enum.Parse(argType, args[i], true);
-                            }
-                            else
-                            {
-                                values[i] = Convert.ChangeType(args[i], ctorArgs[i].ParameterType);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            if (ex is ArgumentException || ex is ArgumentNullException || ex is InvalidCastException)
-                            {
-                                good = false;
-                                break;
-                            }
-                            throw;
-                        }
-                    }
-
-                    if (good)
-                    {
-                        object value = ci.Invoke(values);
-                        pi.SetValue(control, value, null);
-                        break;
-                    }
-                }
+                property.SetValue(args);
             }
+        }
+
+        private StyledReflectedProperty CreateStyledReflectedProperty(Control control, string key)
+        {
+            var props = key.Split('.');
+            PropertyInfo pi = null;
+            var currentTarget = this.Target;
+            object currentInstance = control;
+            object previousInstance = control;
+            foreach (var p in props)
+            {
+                previousInstance = currentInstance;
+                pi = currentTarget.GetProperty(p, BindingFlags.Instance | BindingFlags.Public);
+                if (pi == null) break;
+                currentInstance = pi.GetValue(previousInstance, null);
+                currentTarget = pi.PropertyType;
+            }
+            currentInstance = previousInstance;
+            if (pi == null) return null;
+
+            return new StyledReflectedProperty(currentInstance, pi, control);
         }
     }
 }

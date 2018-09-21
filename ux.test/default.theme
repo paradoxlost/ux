@@ -1,4 +1,4 @@
-﻿
+﻿//
 // CSS style format
 // Attributes should be class properties
 // Attribute values should match one of the property type's contructors
@@ -42,6 +42,11 @@ Form2 {
 	Button {
 		$module: Default;
 		BackColor: White;
+		Enabled: false;
+		ForeColor: Blue;
+		FlatStyle: Flat;
+		FlatAppearance.BorderSize: 4;
+		FlatAppearance.BorderColor: Red;
 	}
 }
 
